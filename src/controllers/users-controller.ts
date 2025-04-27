@@ -1,9 +1,9 @@
-import { AppError } from "@/utils/AppError"
-import { Request, Response } from "express"
-import { prisma } from "@/database/prisma"
-import { UserRole } from "@prisma/client"
-import { hash } from "bcrypt"
-import { z } from "zod"
+import { AppError } from "@/utils/AppError";
+import { Request, Response } from "express";
+import { prisma } from "@/database/prisma";
+import { UserRole } from "@prisma/client";
+import { hash } from "bcrypt";
+import { z } from "zod";
 
 class UsersController {
   async create(request: Request, response: Response) {
@@ -20,18 +20,17 @@ class UsersController {
       role: z
         .enum([UserRole.employee, UserRole.manager])
         .default(UserRole.employee),
-    })
+    });
 
-    const { name, email, password, role } = bodySchema.parse(request.body)
-    console.log({ name, email, password })
+    const { name, email, password, role } = bodySchema.parse(request.body);
 
-    const userWithSameEmail = await prisma.user.findFirst({ where: { email } })
+    const userWithSameEmail = await prisma.user.findFirst({ where: { email } });
 
     if (userWithSameEmail) {
-      throw new AppError("Já existe um usuário cadastrado com esse e-mail")
+      throw new AppError("Já existe um usuário cadastrado com esse e-mail");
     }
 
-    const hashedPassword = await hash(password, 8)
+    const hashedPassword = await hash(password, 8);
 
     await prisma.user.create({
       data: {
@@ -40,10 +39,10 @@ class UsersController {
         password: hashedPassword,
         role,
       },
-    })
+    });
 
-    response.status(201).json()
+    response.status(201).json();
   }
 }
 
-export { UsersController }
+export { UsersController };
